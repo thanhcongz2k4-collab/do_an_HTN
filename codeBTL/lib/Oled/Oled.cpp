@@ -23,3 +23,14 @@ void oled_print(const char* text) {
   display.println(text);
   display.display();
 }
+
+void oled_print_xy(uint8_t x, uint8_t y, const char* text) {
+  display.setCursor(x, y);
+  display.println(text);
+  display.display();
+}
+
+void oled_clear() {
+  display.clearDisplay();
+  display.display();
+}
