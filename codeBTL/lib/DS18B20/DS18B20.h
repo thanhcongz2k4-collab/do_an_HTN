@@ -1,41 +1,36 @@
 #ifndef DS18B20_H
 #define DS18B20_H
 
-#include <Arduino.h>
+#include "define.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-class DS18B20 {
-  private:
+class DS18B20Sensor {
+private:
     OneWire oneWire;
     DallasTemperature sensors;
-    int dataPin;
-    float temperature;
+    float lastTemp;             // Lưu giá trị nhiệt độ gần nhất
 
-  public:
-    // Constructor
-    DS18B20(int pin);
-
+public:
+    DS18B20Sensor();
+    
     // Khởi tạo cảm biến
     void begin();
-
-    // Yêu cầu đọc nhiệt độ
-    void requestTemperature();
-
-    // Lấy nhiệt độ (°C)
-    float getTemperature();
-
-    // Lấy số lượng cảm biến được kết nối
-    int getSensorCount();
-
-    // Lấy nhiệt độ từ địa chỉ cụ thể
-    float getTemperatureByAddress(uint8_t* address);
-
-    // Tìm tất cả địa chỉ cảm biến
-    void findAllSensors();
-
-    // In thông tin cảm biến ra Serial (để debug)
-    void printDebugInfo();
+    
+    // Đọc nhiệt độ (°C)
+    float readTempC();
+    
+    // Đọc nhiệt độ (°F)
+    float readTempF();
+    
+    // Lấy giá trị nhiệt độ lần đọc gần nhất (không đọc lại)
+    float getLastTemp();
+    
+    // Kiểm tra cảm biến có kết nối không
+    bool isConnected();
+    
+    // Lấy trạng thái nhiệt độ dạng chuỗi
+    String getStatusString();
 };
 
 #endif

@@ -1,24 +1,26 @@
 #ifndef ESP32_SERVO_H
 #define ESP32_SERVO_H
 
-#include <Arduino.h>
+#include "define.h"
 
 class ESP32_Servo {
 public:
     ESP32_Servo();
 
-    void attach(uint8_t pin, uint8_t channel);
-    void write(uint8_t angle);   // 0–180
+    // Khoi tao servo (goi trong setup)
+    void begin();
+
+    // Cho ca an: mo nap -> doi -> dong nap
+    void feedFish();
+
+    // Dieu khien goc truc tiep (0-180)
+    void write(uint8_t angle);
+
+    // Ngat ket noi servo
     void detach();
 
 private:
-    uint8_t  _pin;
-    uint8_t  _channel;
-    uint16_t _minUs;
-    uint16_t _maxUs;
-    uint32_t _freq;
-    uint8_t  _resolution;
-
+    uint32_t _maxDuty;
     void writeMicroseconds(uint16_t us);
 };
 
