@@ -6,14 +6,15 @@
 class WaterSensor {
 private:
     int minValue;       // Giá trị ADC tối thiểu (không có nước)
+    int midValue;       // Giá trị ADC ở mức 50% (ngập nửa)
     int maxValue;       // Giá trị ADC tối đa (ngập hoàn toàn)
 
 public:
     WaterSensor();
     void begin();
     
-    // Cấu hình calibration
-    void setCalibration(int minVal, int maxVal);
+    // Cấu hình calibration 3 điểm (khô, nửa, ngập hết)
+    void setCalibration(int minVal, int midVal, int maxVal);
     
     // Đọc giá trị phần trăm mực nước (0-100%)
     int readPercent();

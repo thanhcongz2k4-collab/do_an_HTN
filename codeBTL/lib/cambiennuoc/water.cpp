@@ -2,15 +2,17 @@
 
 WaterSensor::WaterSensor() {
     minValue = 0;       // Giá trị mặc định khi không có nước
-    maxValue = 4095;     // Giá trị mặc định khi ngập hoàn toàn
+    midValue = 2048;    // Giá trị mặc định ở mức 50%
+    maxValue = 4095;    // Giá trị mặc định khi ngập hoàn toàn
 }
 
 void WaterSensor::begin() {
     pinMode(WATER_SENSOR_PIN, INPUT);
 }
 
-void WaterSensor::setCalibration(int minVal, int maxVal) {
+void WaterSensor::setCalibration(int minVal, int midVal, int maxVal) {
     minValue = minVal;
+    midValue = midVal;
     maxValue = maxVal;
 }
 
@@ -27,7 +29,11 @@ int WaterSensor::readRaw() {
 int WaterSensor::readPercent() {
     int value = readRaw();
     value = constrain(value, minValue, maxValue);
-    return map(value, minValue, maxValue, 0, 100);
+    if (value <= midValue) {
+        return map(value, minValue, midValue, 0, 50);
+    } else {
+        return map(value, midValue, maxValue, 50, 100);
+    }
 }
 
 bool WaterSensor::isLow() {

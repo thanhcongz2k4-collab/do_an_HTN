@@ -9,7 +9,6 @@ void Buzzer::begin() {
     pinMode(pin, OUTPUT);
     off();
 }
-
 void Buzzer::on() {
     if (isActiveLow) {
         digitalWrite(pin, LOW);
