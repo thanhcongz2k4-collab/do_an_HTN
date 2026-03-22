@@ -34,7 +34,7 @@ void setup() {
     waterSensor.begin();
     waterSensor.setCalibration(0, 2100, 2650);
     buzzer.begin();
-
+    pinMode(L298_IN1_PIN, OUTPUT);
     Serial.println(F("He thong be ca thong minh da khoi dong!"));
 
     // Task relay+lich: uu tien 3 (cao nhat), core 1
@@ -74,7 +74,7 @@ void taskSensors(void* param) {
         float temp = tempSensor.readTempC();
         int waterRaw = waterSensor.readRaw();
         int water = waterSensor.readPercent();
-        Serial.printf("Water RAW: %d, Percent: %d%%\n", waterRaw, water);
+        //Serial.printf("Water RAW: %d, Percent: %d%%\n", waterRaw, water);
 
         // Cap nhat gia tri len menu
         if (xSemaphoreTake(menuMutex, pdMS_TO_TICKS(10))) {
@@ -84,14 +84,14 @@ void taskSensors(void* param) {
         }
 
         // Canh bao nhiet do bat thuong
-        if (temp < 20 || temp > 35) {
+        if (temp < 20 || temp > 30) {
             buzzer.alarmBeep();
-            digitalWrite(L298_IN1_PIN , LOW); // Bat quat
-            digitalWrite(L298_IN2_PIN , HIGH);
+            digitalWrite(L298_IN1_PIN , HIGH); // Bat quat
+            Serial.println("Nhiet do bat thuong! Bat quat lam mat.");
         }
         else {
             digitalWrite(L298_IN1_PIN , LOW); // Tat quat
-            digitalWrite(L298_IN2_PIN , LOW);
+            Serial.println("Nhiet do binh thuong. Tat quat.");
         }
 
         // Canh bao muc nuoc thap

@@ -57,9 +57,7 @@
 
 // --- L298 Dieu khien quat ---
 #define L298_ENA_PIN        14    // Enable quat (HIGH = chay)
-#define L298_IN1_PIN        12    // Chieu quay 1
-#define L298_IN2_PIN        23    // Chieu quay 2 (tranh GPIO2 - boot pin)
-#define FAN_TEMP_ON         30.0  // Nhiet do bat quat (°C)
+#define L298_IN1_PIN        23    // Chieu quay 1
 
 // --- Buzzer ---
 #define BUZZER_PIN          5
