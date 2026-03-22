@@ -34,20 +34,9 @@ public:
     EC11();
     void begin();
     void update();  // Chi xu ly nut nhan
-
-    int getPosition();
-    void setPosition(int pos);
-    void setLimit(int minVal, int maxVal);
-    void removeLimit();
-
-    int getDirection();
-    bool isTurnedCW();
-    bool isTurnedCCW();
-    bool isTurned();
-
+    int getDirection();  
     bool isButtonPressed();
     bool isButtonHeld();
-    bool isButtonDown();
 };
 
 #endif

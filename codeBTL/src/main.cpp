@@ -21,6 +21,7 @@ void taskRelaySchedule(void* param);
 void taskSensors(void* param);
 void taskDisplay(void* param);
 
+// Khoi tao toan bo he thong: giao tiep, menu, cam bien, scheduler va tao cac task FreeRTOS.
 void setup() {
     Serial.begin(115200);
 
@@ -47,12 +48,15 @@ void setup() {
     xTaskCreatePinnedToCore(taskDisplay, "Display", 4096, NULL, 2, NULL, 0);
 }
 
+// Khong dung vong loop Arduino truyen thong; he thong chay boi cac task rieng.
 void loop() {
     // loop() ranh - tat ca da chay trong FreeRTOS tasks
     vTaskDelay(pdMS_TO_TICKS(1000));
 }
 
 // ===== TASK 1: Relay nut nhan + Lap lich (uu tien cao, 20ms) =====
+// Task uu tien cao: xu ly nut relay va ap lich dieu khien o cam.
+// Tach task rieng de dam bao relay phan hoi nhanh va dung thoi diem.
 void taskRelaySchedule(void* param) {
     for (;;) {
         // Nut nhan relay - KHONG can mutex, chi doc/ghi GPIO
@@ -69,6 +73,7 @@ void taskRelaySchedule(void* param) {
 }
 
 // ===== TASK 2: Doc cam bien + Coi canh bao (2 giay) =====
+// Task cam bien dinh ky: doc nhiet do/muc nuoc, cap nhat menu va xu ly canh bao.
 void taskSensors(void* param) {
     for (;;) {
         float temp = tempSensor.readTempC();
@@ -104,6 +109,7 @@ void taskSensors(void* param) {
 }
 
 // ===== TASK 3: OLED + Encoder EC11 (50ms) =====
+// Task giao dien: cap nhat state machine menu va ve OLED theo input encoder.
 void taskDisplay(void* param) {
     for (;;) {
         if (xSemaphoreTake(menuMutex, pdMS_TO_TICKS(10))) {

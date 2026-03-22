@@ -1,5 +1,6 @@
 #include "schedule.h"
 
+// Khoi tao bien trang thai bo lap lich va cac co chong kich lai trong cung 1 phut.
 ScheduleManager::ScheduleManager() {
     _currentHour = 0;
     _currentMinute = 0;
@@ -10,6 +11,7 @@ ScheduleManager::ScheduleManager() {
     memset(_lastSchedShouldOn, -1, sizeof(_lastSchedShouldOn));
 }
 
+// Khoi tao relay/servo, ket noi WiFi va dong bo thoi gian NTP de kich hoat lich.
 void ScheduleManager::begin(const char* ssid, const char* password) {
     // Khoi tao relay va servo TRUOC WiFi de nut nhan hoat dong ngay
     _relays.begin();
@@ -55,7 +57,8 @@ void ScheduleManager::begin(const char* ssid, const char* password) {
     }
 }
 
-bool ScheduleManager::updateTime() {
+// Cap nhat gio/phut hien tai tu he thong (NTP da dong bo), khong block lau.
+bool ScheduleManager::updateTime() { // cap nhat thoi gian hienej taij
     struct tm timeinfo;
     // Timeout 10ms - KHONG BLOCK, chi doc thoi gian da co san
     if (getLocalTime(&timeinfo, 10)) {
@@ -67,7 +70,8 @@ bool ScheduleManager::updateTime() {
     return false;
 }
 
-void ScheduleManager::update(Menu &menu) {
+// Ham trung tam xu ly lich: cap nhat thoi gian, dieu khien relay, feed tu dong va feed thu cong.
+void ScheduleManager::update(Menu &menu) { // cập nhật lịch từ menu và điều khiển thiết bị theo lịch
     unsigned long now = millis();
     if (now - _lastCheck < SCHEDULE_CHECK_INTERVAL) return;
     _lastCheck = now;
@@ -165,6 +169,8 @@ void ScheduleManager::update(Menu &menu) {
     }
 }
 
+// Kiem tra thoi diem hien tai co nam trong khoang [start, end) hay khong.
+// Ho tro ca khoang cung ngay va khoang qua nua dem.
 bool ScheduleManager::isInRange(uint8_t curH, uint8_t curM,
                                 uint8_t startH, uint8_t startM,
                                 uint8_t endH, uint8_t endM) {
@@ -181,22 +187,30 @@ bool ScheduleManager::isInRange(uint8_t curH, uint8_t curM,
     }
 }
 
+// So khop chinh xac theo gio-phut, dung cho su kien cho an tai 1 moc cu the.
 bool ScheduleManager::isExactTime(uint8_t curH, uint8_t curM,
                                   uint8_t targetH, uint8_t targetM) {
     return (curH == targetH && curM == targetM);
 }
 
+// Getter gio hien tai da cache.
 uint8_t ScheduleManager::getHour()   { return _currentHour; }
+// Getter phut hien tai da cache.
 uint8_t ScheduleManager::getMinute() { return _currentMinute; }
 
+// Lay giay hien tai truc tiep tu he thong de phuc vu hien thi/debug.
 uint8_t ScheduleManager::getSecond() {
     struct tm timeinfo;
     if (getLocalTime(&timeinfo, 10)) return timeinfo.tm_sec;
     return 0;
 }
 
+// Kiem tra trang thai ket noi WiFi hien tai.
 bool ScheduleManager::isWiFiConnected() { return WiFi.status() == WL_CONNECTED; }
+// Kiem tra he thong da dong bo thoi gian thanh cong hay chua.
 bool ScheduleManager::isTimeSynced() { return _timeSynced; }
 
+// Tra ve tham chieu bo dieu khien relay de task ben ngoai cap nhat nut nhan.
 RelayController& ScheduleManager::getRelays() { return _relays; }
+// Tra ve tham chieu servo cho an de su dung tu ben ngoai neu can.
 ESP32_Servo& ScheduleManager::getServo() { return _servo; }

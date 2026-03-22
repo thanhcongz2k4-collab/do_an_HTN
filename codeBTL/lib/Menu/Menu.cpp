@@ -27,6 +27,7 @@ Menu::Menu()
     memset(_feedSched, 0, sizeof(_feedSched));
 }
 
+// Khoi tao OLED, encoder va ve giao dien trang chu ban dau.
 void Menu::begin() {
     // Khoi tao OLED
     if (!_display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
@@ -44,6 +45,7 @@ void Menu::begin() {
     drawHome();
 }
 
+// Vong cap nhat UI: doc input encoder/nut, xu ly state machine va redraw khi can.
 void Menu::update() {
     // Doc encoder
     _encoder.update();
@@ -77,6 +79,7 @@ void Menu::update() {
     }
 }
 
+// Chuyen trang thai man hinh va reset bo dem dieu huong de vao trang moi sach se.
 void Menu::changeState(MenuState newState) {
     _state = newState;
     _cursor = 0;
@@ -86,12 +89,14 @@ void Menu::changeState(MenuState newState) {
 
 // ===================== XU LY TRANG THAI =====================
 
+// Trang HOME: nhan nut de vao menu chinh.
 void Menu::handleHome(int dir, bool press, bool hold) {
     if (press) {
         changeState(STATE_MAIN_MENU);
     }
 }
 
+// Xu ly dieu huong danh sach menu chinh va mo chuc nang tuong ung.
 void Menu::handleMainMenu(int dir, bool press, bool hold) {
     if (hold) {
         changeState(STATE_HOME);
@@ -125,6 +130,7 @@ void Menu::handleMainMenu(int dir, bool press, bool hold) {
     }
 }
 
+// Trang thong tin cam bien: nhan hoac giu nut de quay lai menu chinh.
 void Menu::handleDisplayInfo(int dir, bool press, bool hold) {
     if (hold || press) {
         changeState(STATE_MAIN_MENU);
@@ -132,6 +138,7 @@ void Menu::handleDisplayInfo(int dir, bool press, bool hold) {
     }
 }
 
+// Chon mot lich trong danh sach lich cua o cam hoac lich cho an.
 void Menu::handleScheduleList(int dir, bool press, bool hold) {
     if (hold) {
         // Quay lai menu chinh, giu vi tri con tro
@@ -159,6 +166,7 @@ void Menu::handleScheduleList(int dir, bool press, bool hold) {
     }
 }
 
+// Chinh sua chi tiet mot lich: di chuyen field, doi gia tri, luu vao flash.
 void Menu::handleScheduleEdit(int dir, bool press, bool hold) {
     int fieldCount = getEditFieldCount();
 
@@ -226,6 +234,7 @@ void Menu::handleScheduleEdit(int dir, bool press, bool hold) {
     }
 }
 
+// Trang cho an thu cong: nhan de kich hoat co feed, giu de thoat.
 void Menu::handleFeedManual(int dir, bool press, bool hold) {
     if (hold) {
         changeState(STATE_MAIN_MENU);
@@ -241,11 +250,13 @@ void Menu::handleFeedManual(int dir, bool press, bool hold) {
 
 // ===================== VE MAN HINH =====================
 
+// In gia tri thoi gian theo dang 2 chu so (vd: 03, 12).
 void Menu::printTime2Digits(uint8_t val) {
     if (val < 10) _display.print('0');
     _display.print(val);
 }
 
+// Ve man hinh tong quan he thong (nhiet do, muc nuoc, huong dan vao menu).
 void Menu::drawHome() {
     _display.clearDisplay();
     _display.setTextSize(1);
@@ -274,6 +285,7 @@ void Menu::drawHome() {
     _display.display();
 }
 
+// Ve danh sach menu chinh kem con tro va mui ten cuon.
 void Menu::drawMainMenu() {
     _display.clearDisplay();
     _display.setTextSize(1);
@@ -303,6 +315,7 @@ void Menu::drawMainMenu() {
     _display.display();
 }
 
+// Ve man hinh thong tin chi tiet nhiet do va muc nuoc.
 void Menu::drawDisplayInfo() {
     _display.clearDisplay();
     _display.setTextSize(1);
@@ -342,6 +355,7 @@ void Menu::drawDisplayInfo() {
     _display.display();
 }
 
+// Ve danh sach toi da 4 lich cho doi tuong dang chon (o cam hoac cho an).
 void Menu::drawScheduleList() {
     _display.clearDisplay();
     _display.setTextSize(1);
@@ -388,6 +402,7 @@ void Menu::drawScheduleList() {
     _display.display();
 }
 
+// Ve man hinh chinh sua 1 lich, co nhap nhay truong dang duoc sua.
 void Menu::drawScheduleEdit() {
     _display.clearDisplay();
     _display.setTextSize(1);
@@ -505,6 +520,7 @@ void Menu::drawScheduleEdit() {
     _display.display();
 }
 
+// Ve giao dien cho an thu cong va trang thai da kich hoat.
 void Menu::drawFeedManual() {
     _display.clearDisplay();
     _display.setTextSize(1);
@@ -530,21 +546,26 @@ void Menu::drawFeedManual() {
 
 // ===================== GETTER / SETTER =====================
 
+// Cap nhat gia tri nhiet do de cac man hinh hien thi thong tin moi.
 void Menu::setTemperature(float temp) { _temperature = temp; }
+// Cap nhat phan tram muc nuoc de cac man hinh hien thi thong tin moi.
 void Menu::setWaterLevel(int level) { _waterLevel = level; }
 
+// Lay 1 lich cua o cam theo chi so; neu sai pham vi thi tra ve lich rong.
 Schedule Menu::getOutletSchedule(uint8_t outlet, uint8_t schedIdx) {
     if (outlet < MAX_OUTLETS && schedIdx < MAX_SCHEDULES)
         return _outletSched[outlet][schedIdx];
     return {false, 0, 0, 0, 0};
 }
 
+// Lay 1 lich cho an theo chi so; neu sai pham vi thi tra ve lich rong.
 Schedule Menu::getFeedSchedule(uint8_t schedIdx) {
     if (schedIdx < MAX_SCHEDULES)
         return _feedSched[schedIdx];
     return {false, 0, 0, 0, 0};
 }
 
+// Tra ve co cho an thu cong theo kieu consume-on-read (doc xong se reset).
 bool Menu::isFeedManualTriggered() {
     if (_feedManualFlag) {
         _feedManualFlag = false;
@@ -553,12 +574,15 @@ bool Menu::isFeedManualTriggered() {
     return false;
 }
 
+// Tra ve trang thai man hinh hien tai cua state machine.
 MenuState Menu::getState() { return _state; }
 
+// So truong can sua phu thuoc loai lich: o cam (6) hoac cho an (4).
 int Menu::getEditFieldCount() {
     return (_selOutlet < 4) ? 6 : 4;
 }
 
+// Sap xep lich theo gio bat tang dan; lich tat se day xuong cuoi danh sach.
 void Menu::sortSchedules(Schedule *scheds, int count) {
     // Sap xep theo thoi gian bat dau tang dan
     // Lich TAT (enabled=false) day xuong cuoi
@@ -583,6 +607,7 @@ void Menu::sortSchedules(Schedule *scheds, int count) {
     }
 }
 
+// Luu toan bo lich o cam va lich cho an vao NVS flash.
 void Menu::saveToFlash() {
     _prefs.begin("schedules", false);
     _prefs.putBytes("outlet", _outletSched, sizeof(_outletSched));
@@ -590,6 +615,7 @@ void Menu::saveToFlash() {
     _prefs.end();
 }
 
+// Nap lich tu NVS flash neu da ton tai key du lieu truoc do.
 void Menu::loadFromFlash() {
     _prefs.begin("schedules", true);
     if (_prefs.isKey("outlet")) {

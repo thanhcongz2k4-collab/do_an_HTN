@@ -42,7 +42,7 @@
 #define BUTTON_3_PIN        26    // Nut nhan dieu khien relay D17
 #define BUTTON_4_PIN        34    // Nut nhan dieu khien relay D18
 #define NUM_EXTRA_BUTTONS   3
-#define DEBOUNCE_MS         10
+#define DEBOUNCE_MS         10   // thời gian chống dội nút
 
 // --- Servo cho ca an ---
 #define SERVO_PIN           13

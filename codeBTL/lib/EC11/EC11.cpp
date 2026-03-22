@@ -22,6 +22,7 @@ void IRAM_ATTR EC11::isrHandler() {
     if (_instance) _instance->handleEncoder();
 }
 
+// Ham duoc goi trong ISR de giai ma xung A/B va cap nhat vi tri quay.
 void IRAM_ATTR EC11::handleEncoder() {
     bool currentA = digitalRead(EC11_CLK_PIN); // Đọc trạng thái hiện tại của chân A
     if (currentA != lastStateA && currentA == LOW) {
@@ -34,8 +35,8 @@ void IRAM_ATTR EC11::handleEncoder() {
             lastDirection = EC11_DIR_CCW;
         }
         if (hasLimit) {
-            if (position < minPos) position = minPos;
-            if (position > maxPos) position = maxPos;
+            if (position < minPos) position = minPos; 
+            if (position > maxPos) position = maxPos; 
         }
     }
     lastStateA = currentA;
@@ -80,56 +81,14 @@ void EC11::update() {
     lastButtonState = reading;
 }
 
-int EC11::getPosition() { return position; }
-
-void EC11::setPosition(int pos) {
-    position = pos;
-    if (hasLimit) {
-        if (position < minPos) position = minPos;
-        if (position > maxPos) position = maxPos;
-    }
-}
-
-void EC11::setLimit(int minVal, int maxVal) {
-    minPos = minVal;
-    maxPos = maxVal;
-    hasLimit = true;
-    if (position < minPos) position = minPos;
-    if (position > maxPos) position = maxPos;
-}
-
-void EC11::removeLimit() { hasLimit = false; }
-
+// Tra ve huong quay cuoi cung roi reset ve NONE de tranh doc lap.
 int EC11::getDirection() {
     int dir = lastDirection;
     lastDirection = EC11_DIR_NONE;
     return dir;
 }
 
-bool EC11::isTurnedCW() {
-    if (lastDirection == EC11_DIR_CW) {
-        lastDirection = EC11_DIR_NONE;
-        return true;
-    }
-    return false;
-}
-
-bool EC11::isTurnedCCW() {
-    if (lastDirection == EC11_DIR_CCW) {
-        lastDirection = EC11_DIR_NONE;
-        return true;
-    }
-    return false;
-}
-
-bool EC11::isTurned() {
-    if (lastDirection != EC11_DIR_NONE) { // 
-        lastDirection = EC11_DIR_NONE;
-        return true;
-    }
-    return false;
-}
-
+// Tra ve su kien nhan ngan 1 lan duy nhat (co che edge-trigger).
 bool EC11::isButtonPressed() {
     if (buttonPressed) {
         buttonPressed = false;
@@ -138,6 +97,7 @@ bool EC11::isButtonPressed() {
     return false;
 }
 
+// Tra ve su kien nhan giu 1 lan duy nhat sau khi vuot nguong HOLD_TIME.
 bool EC11::isButtonHeld() {
     if (buttonHeld) {
         buttonHeld = false;
@@ -146,6 +106,3 @@ bool EC11::isButtonHeld() {
     return false;
 }
 
-bool EC11::isButtonDown() {
-    return (buttonState == LOW);
-}
